@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 import os
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
-from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 from .models import ContentResponse, GenerateRequest, SummarizeRequest
 from .prompts import summarize_prompt, generate_prompt
 
@@ -14,10 +14,9 @@ app = FastAPI(
     version="0.1.0"
 )
 
-llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
-    temperature=0.7,
-    api_key=os.getenv("GROQ_API_KEY")
+llm = ChatOllama(
+    model=os.getenv("MODEL"),
+    base_url=os.getenv("BASE_URL")
 )
 
 summarize_chain = (summarize_prompt | llm | StrOutputParser())
