@@ -1,19 +1,32 @@
 import tempfile
 import os
+from functools import partial
 from fastapi import UploadFile, HTTPException
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import (
+    PyPDFLoader,
+    TextLoader,
+    Docx2txtLoader,
+    UnstructuredMarkdownLoader,
+)
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from typing import List
+from typing import List, Dict, Callable
+
+SUPPORTED_EXTENSIONS: Dict[str, Callable] = {
+    ".pdf": PyPDFLoader,
+    ".txt": partial(TextLoader, encoding="utf-8"),
+    ".docx": Docx2txtLoader,
+    ".md": UnstructuredMarkdownLoader,
+}
 
 
 async def process_uploaded_file(file: UploadFile) -> List[Document]:
-    allowed_extensions = [".pdf", ".txt"]
     file_ext = os.path.splitext(file.filename.lower())[1]
 
-    if file_ext not in allowed_extensions:
+    if file_ext not in SUPPORTED_EXTENSIONS.keys():
+        supported = ", ".join(SUPPORTED_EXTENSIONS.keys())
         raise HTTPException(
-            status_code=400, detail="Only .pdf and .txt files are supported"
+            status_code=400, detail=f"Only {supported} files are supported."
         )
 
     content = await file.read()
@@ -30,10 +43,7 @@ async def process_uploaded_file(file: UploadFile) -> List[Document]:
         # close temporary file here
 
     try:
-        if file_ext == ".pdf":
-            loader = PyPDFLoader(tmp_path)
-        else:
-            loader = TextLoader(tmp_path, encoding="utf-8")
+        loader = SUPPORTED_EXTENSIONS[file_ext](tmp_path)
 
         documents = loader.load()
         text_splitter = RecursiveCharacterTextSplitter(
