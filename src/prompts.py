@@ -24,3 +24,19 @@ generate_prompt = ChatPromptTemplate.from_template(
 
     Content:"""
 )
+
+document_summary_prompt = ChatPromptTemplate.from_template(
+    """You are an expert document summarizer.
+    
+    Summarize the following document in a clear, well-structured way.
+    Style: {style}
+    Target length: around {max_length} words.
+    
+    Focus on the main ideas, key points, and important details.
+    Use bullet points if the style is "bullet_points".
+    
+    Document content:
+    {text}
+    
+    Summary:"""
+)

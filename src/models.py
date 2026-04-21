@@ -27,3 +27,18 @@ class GenerateRequest(BaseModel):
 class ContentResponse(BaseModel):
     content: str
     word_count: int
+
+
+class DocumentUploadRequest(BaseModel):
+    max_length: Optional[int] = Field(400, ge=100, le=1500)
+    style: Literal["concise", "detailed", "bullet_points", "professional", "simple"] = (
+        "detailed"
+    )
+
+
+class DocumentSummaryResponse(BaseModel):
+    filename: str
+    content: str
+    word_count: int
+    chunks_processed: int
+    model_used: str
