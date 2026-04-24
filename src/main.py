@@ -1,8 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
-import os
-from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama import ChatOllama
+from fastapi.middleware.cors import CORSMiddleware
 from .models import (
     ContentResponse,
     GenerateRequest,
@@ -10,10 +9,9 @@ from .models import (
     DocumentSummaryResponse,
     DocumentUploadRequest,
 )
+from .settings import settings
 from .prompts import summarize_prompt, generate_prompt, document_summary_prompt
 from .document_processor import process_uploaded_file
-
-load_dotenv()
 
 app = FastAPI(
     title="Summarizer",
@@ -21,7 +19,15 @@ app = FastAPI(
     version="0.1.0",
 )
 
-llm = ChatOllama(model=os.getenv("MODEL"), base_url=os.getenv("BASE_URL"))
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOW_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+llm = ChatOllama(model=settings.MODEL, base_url=settings.BASE_URL)
 
 summarize_chain = summarize_prompt | llm | StrOutputParser()
 generate_chain = generate_prompt | llm | StrOutputParser()
