@@ -1,6 +1,6 @@
 # Summarizer
 
-A FastAPI-based service for text summarization and content generation powered by Ollama and LangChain.
+A FastAPI-based service for text summarization and content generation powered by multiple LLM providers (Ollama, Groq, OpenAI, Anthropic) and LangChain.
 
 ## API Endpoints
 
@@ -15,7 +15,7 @@ A FastAPI-based service for text summarization and content generation powered by
 ## Requirements
 
 - Python 3.9+
-- Ollama running locally (default: `http://localhost:11434`)
+- Ollama running locally (default: `http://localhost:11434`) OR API keys for cloud providers (Groq, OpenAI, Anthropic)
 
 ## Installation
 
@@ -34,10 +34,37 @@ uvicorn src.main:app --reload
 
 Set environment variables or use a `.env` file:
 
+### Ollama (default)
+
 ```env
-MODEL=ollama
+LLM_PROVIDER=ollama
+MODEL=llama3.2
 BASE_URL=http://localhost:11434
 ALLOW_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+```
+
+### Groq
+
+```env
+LLM_PROVIDER=groq
+MODEL=llama-3.3-70b-versatile
+API_KEY=your_groq_api_key
+```
+
+### OpenAI
+
+```env
+LLM_PROVIDER=openai
+MODEL=gpt-4o-mini
+API_KEY=your_openai_api_key
+```
+
+### Anthropic
+
+```env
+LLM_PROVIDER=anthropic
+MODEL=claude-sonnet-4-20250514
+API_KEY=your_anthropic_api_key
 ```
 
 ## Example Usage
