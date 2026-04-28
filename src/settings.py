@@ -11,8 +11,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "ollama")
     MODEL: str = os.getenv("MODEL")
     BASE_URL: str = os.getenv("BASE_URL")
+    API_KEY: str = os.getenv("API_KEY")
     ALLOW_ORIGINS: List[str] = ["http://localhost:8000", "http://127.0.0.1:8000"]
+
 
 settings = Settings()

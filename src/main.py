@@ -1,6 +1,9 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from fastapi.middleware.cors import CORSMiddleware
 from .models import (
     ContentResponse,
@@ -27,7 +30,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-llm = ChatOllama(model=settings.MODEL, base_url=settings.BASE_URL)
+
+def get_llm():
+    provider = settings.LLM_PROVIDER.lower()
+
+    match provider:
+        case "ollama":
+            return ChatOllama(model=settings.MODEL, base_url=settings.BASE_URL)
+        case "groq":
+            return ChatGroq(model=settings.MODEL, api_key=settings.API_KEY)
+        case "openai":
+            return ChatOpenAI(model=settings.MODEL, api_key=settings.API_KEY)
+        case "anthropic":
+            return ChatAnthropic(model=settings.MODEL, api_key=settings.API_KEY)
+        case _:
+            raise ValueError(
+                f"Unsupported LLM provider: {provider}. "
+                "Supported providers: ollama, groq, openai, anthropic"
+            )
+
+
+llm = get_llm()
 
 summarize_chain = summarize_prompt | llm | StrOutputParser()
 generate_chain = generate_prompt | llm | StrOutputParser()
@@ -98,7 +121,7 @@ async def upload_and_summarize(
             content=result.strip(),
             word_count=len(result.split()),
             chunks_processed=len(split_docs),
-            model_used=getattr(llm, "model", "groq"),
+            model_used=settings.MODEL,
         )
         return response
     except HTTPException:
