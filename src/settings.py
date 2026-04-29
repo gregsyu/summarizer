@@ -15,7 +15,12 @@ class Settings(BaseSettings):
     MODEL: str = os.getenv("MODEL")
     BASE_URL: str = os.getenv("BASE_URL")
     API_KEY: str = os.getenv("API_KEY")
-    ALLOW_ORIGINS: List[str] = ["http://localhost:8000", "http://127.0.0.1:8000"]
+    ALLOW_ORIGINS: List[str] = [
+        s.strip()
+        for s in os.getenv(
+            "ALLOW_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"
+        ).split(",")
+    ]
 
 
 settings = Settings()
