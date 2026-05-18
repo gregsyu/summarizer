@@ -12,7 +12,7 @@ A FastAPI-based service for text summarization and content generation powered by
 | `/upload-and-summarize` | POST | Upload a document and get a summary |
 | `/docs` | GET | Interactive API documentation (Swagger UI) |
 
-## Requirements
+## Installation
 
 - Python 3.9+
 - Ollama running locally (default: `http://localhost:11434`) OR API keys for cloud providers (Groq, OpenAI, Anthropic)
@@ -22,9 +22,6 @@ A FastAPI-based service for text summarization and content generation powered by
 ```bash
 # Install dependencies
 pip install -r requirements.txt
-
-# Start Ollama with your preferred model
-ollama serve
 
 # Run the server
 uvicorn src.main:app --reload
@@ -40,7 +37,7 @@ Set environment variables or use a `.env` file:
 LLM_PROVIDER=ollama
 MODEL=llama3.2
 BASE_URL=http://localhost:11434
-ALLOW_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+ALLOW_ORIGINS=http://localhost:3000,http://localhost:8080
 ```
 
 ### Groq
