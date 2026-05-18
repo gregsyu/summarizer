@@ -12,9 +12,9 @@ class Settings(BaseSettings):
     )
 
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "ollama")
-    MODEL: str = os.getenv("MODEL")
-    BASE_URL: str = os.getenv("BASE_URL")
-    API_KEY: str = os.getenv("API_KEY")
+    MODEL: str = os.getenv("MODEL", "")
+    BASE_URL: str = os.getenv("BASE_URL", "http://localhost:11434")
+    API_KEY: str = os.getenv("API_KEY", "")
     ALLOW_ORIGINS: List[str] = [
         s.strip()
         for s in os.getenv(
