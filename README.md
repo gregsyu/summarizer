@@ -14,10 +14,14 @@ A FastAPI-based service for text summarization and content generation powered by
 
 ## Installation
 
-- Python 3.9+
-- Ollama running locally (default: `http://localhost:11434`) OR API keys for cloud providers (Groq, OpenAI, Anthropic)
+### With Docker (Recommended)
 
-## Installation
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+```
+
+### Manual Installation
 
 ```bash
 # Install dependencies
@@ -85,6 +89,30 @@ curl -X POST http://localhost:8000/generate \
 ### Upload and Summarize Document
 
 ```bash
-curl -X POST http://localhost:8000/upload-and-summarize?max_length=150\&style=bullet_points \
+curl -X POST http://localhost:8000/upload-and-summarize?max_length=150&style=bullet_points \
   -F "file=@document.pdf"
+```
+
+## Docker Usage
+
+The project includes Docker support for easy deployment:
+
+### Using Docker Compose (recommended)
+```bash
+docker-compose up --build
+```
+
+### Using Docker directly
+```bash
+docker build -t summarizer .
+docker run -p 8000:8000 summarizer
+```
+
+Environment variables can be overridden using `.env` file or Docker run flags:
+```bash
+docker run -p 8000:8000 \
+  -e LLM_PROVIDER=openai \
+  -e MODEL=gpt-4o-mini \
+  -e API_KEY=your_api_key \
+  summarizer
 ```
