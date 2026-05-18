@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-ollama}
+      - MODEL=${MODEL:-llama3.2}
+      - BASE_URL=${BASE_URL:-http://host.docker.internal:11434}
+      - API_KEY=${API_KEY:-}
+      - ALLOW_ORIGINS=${ALLOW_ORIGINS:-http://localhost:3000,http://localhost:8080}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
