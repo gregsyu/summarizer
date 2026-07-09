@@ -42,7 +42,9 @@ def get_llm():
         case "openai":
             return ChatOpenAI(model=settings.MODEL, api_key=settings.API_KEY)
         case "anthropic":
-            return ChatAnthropic(model=settings.MODEL, api_key=settings.API_KEY)
+            return ChatAnthropic(
+                model=settings.MODEL, api_key=settings.API_KEY
+                )
         case _:
             raise ValueError(
                 f"Unsupported LLM provider: {provider}. "
