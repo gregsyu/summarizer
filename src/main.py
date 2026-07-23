@@ -72,7 +72,9 @@ async def summarize(request: SummarizeRequest):
             }
         )
 
-        return ContentResponse(content=result.strip(), word_count=len(result.split()))
+        return ContentResponse(
+            content=result.strip(), word_count=len(result.split())
+            )
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error generating summary: {str(e)}"
@@ -95,7 +97,9 @@ async def generate_content(request: GenerateRequest):
             }
         )
 
-        return ContentResponse(content=result.strip(), word_count=len(result.split()))
+        return ContentResponse(
+            content=result.strip(), word_count=len(result.split())
+            )
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error generating content: {str(e)}"
@@ -105,7 +109,8 @@ async def generate_content(request: GenerateRequest):
 @app.post("/upload-and-summarize", response_model=DocumentSummaryResponse)
 async def upload_and_summarize(
     file: UploadFile = File(...),
-    request: DocumentUploadRequest = Depends(),  # `Depends()` make it use it as query parameters
+    # `Depends()` make it use it as query parameters
+    request: DocumentUploadRequest = Depends(),
 ):
     try:
         split_docs = await process_uploaded_file(file)

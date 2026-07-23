@@ -1,23 +1,29 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
+from typing import Optional, Literal, Annotated
+
+Styles = Literal["concise", "detailed", "bullet_points", "professional"]
+Tones = Literal["professional", "casual", "funny", "persuasive", "educational"]
+ContentTypes = Literal[
+    "blog_post",
+    "social_media",
+    "email",
+    "product_description",
+    "youtube_script"
+    ]
 
 
 class SummarizeRequest(BaseModel):
     text: str = Field(..., min_length=50, description="Text to summarize")
-    max_length: Optional[int] = Field(
-        200, ge=50, le=1000, description="Max words in summary"
-    )
-    style: Literal["concise", "detailed", "bullet_points", "professional"] = "concise"
+    max_length: Annotated[
+        int | None, Field(ge=50, le=1000, description="Max words in summary")
+        ] = 200
+    style: Styles = "concise"
 
 
 class GenerateRequest(BaseModel):
     topic: str = Field(..., min_length=3, description="Main topic or title")
-    content_type: Literal[
-        "blog_post", "social_media", "email", "product_description", "youtube_script"
-    ] = "blog_post"
-    tone: Literal["professional", "casual", "funny", "persuasive", "educational"] = (
-        "professional"
-    )
+    content_type: ContentTypes = "blog_post"
+    tone: Tones = "professional"
     length: Optional[int] = Field(
         400, ge=100, le=2000, description="Approximate word count"
     )
@@ -31,9 +37,7 @@ class ContentResponse(BaseModel):
 
 class DocumentUploadRequest(BaseModel):
     max_length: Optional[int] = Field(400, ge=100, le=1500)
-    style: Literal["concise", "detailed", "bullet_points", "professional", "simple"] = (
-        "detailed"
-    )
+    style: Styles = "detailed"
 
 
 class DocumentSummaryResponse(BaseModel):

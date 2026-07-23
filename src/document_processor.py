@@ -35,9 +35,12 @@ async def process_uploaded_file(file: UploadFile) -> List[Document]:
             status_code=400, detail="File too large. Maximum size is 10MB."
         )
 
-    # recommended way to pass a file path to loaders that will open the file themselves:
+    # recommended way to pass a file path to loaders
+    # that will open the file themselves:
     # with/try/finally
-    with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as (
+        tmp_file
+    ):
         tmp_file.write(content)
         tmp_path = tmp_file.name
         # close temporary file here
