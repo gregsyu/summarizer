@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Literal, Annotated
+from typing import Literal, Annotated
 
 Styles = Literal["concise", "detailed", "bullet_points", "professional"]
 Tones = Literal["professional", "casual", "funny", "persuasive", "educational"]
@@ -24,10 +24,8 @@ class GenerateRequest(BaseModel):
     topic: str = Field(..., min_length=3, description="Main topic or title")
     content_type: ContentTypes = "blog_post"
     tone: Tones = "professional"
-    length: Optional[int] = Field(
-        400, ge=100, le=2000, description="Approximate word count"
-    )
-    extra_instructions: Optional[str] = None
+    length: Annotated[int | None, Field(ge=100, le=2000, description="Approximate word count")] = 400
+    extra_instructions: str | None = None
 
 
 class ContentResponse(BaseModel):
@@ -36,7 +34,7 @@ class ContentResponse(BaseModel):
 
 
 class DocumentUploadRequest(BaseModel):
-    max_length: Optional[int] = Field(400, ge=100, le=1500)
+    max_length: Annotated[int | None, Field(ge=100, le=1500)] = 400
     style: Styles = "detailed"
 
 

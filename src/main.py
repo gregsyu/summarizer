@@ -15,6 +15,8 @@ from .models import (
 from .settings import settings
 from .prompts import summarize_prompt, generate_prompt, document_summary_prompt
 from .document_processor import process_uploaded_file
+from typing import Annotated
+from pydantic import SecretStr
 
 app = FastAPI(
     title="Summarizer",
@@ -33,21 +35,22 @@ app.add_middleware(
 
 def get_llm():
     provider = settings.LLM_PROVIDER.lower()
+    api_key = SecretStr(settings.API_KEY)
 
     match provider:
         case "ollama":
             return ChatOllama(model=settings.MODEL, base_url=settings.BASE_URL)
         case "groq":
-            return ChatGroq(model=settings.MODEL, api_key=settings.API_KEY)
+            return ChatGroq(model=settings.MODEL, api_key=api_key)
         case "openai":
-            return ChatOpenAI(model=settings.MODEL, api_key=settings.API_KEY)
+            return ChatOpenAI(model=settings.MODEL, api_key=api_key)
         case "anthropic":
             return ChatAnthropic(
-                model=settings.MODEL, api_key=settings.API_KEY
+                model_name=settings.MODEL, api_key=api_key
                 )
         case _:
             raise ValueError(
-                f"Unsupported LLM provider: {provider}. "
+                f"Unsupported LLM provider: {provider}. " +
                 "Supported providers: ollama, groq, openai, anthropic"
             )
 
@@ -108,9 +111,9 @@ async def generate_content(request: GenerateRequest):
 
 @app.post("/upload-and-summarize", response_model=DocumentSummaryResponse)
 async def upload_and_summarize(
-    file: UploadFile = File(...),
+    file: Annotated[UploadFile, File(...)],
     # `Depends()` make it use it as query parameters
-    request: DocumentUploadRequest = Depends(),
+    request: Annotated[DocumentUploadRequest, Depends()],
 ):
     try:
         split_docs = await process_uploaded_file(file)
@@ -122,6 +125,12 @@ async def upload_and_summarize(
                 "style": request.style.replace("_", " "),
             }
         )
+
+        if file.filename is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Uploaded file must have a filename",
+            )
 
         response = DocumentSummaryResponse(
             filename=file.filename,

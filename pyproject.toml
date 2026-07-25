@@ -26,6 +26,16 @@ package-mode = false
 max-line-length = 127
 max-complexity = 10
 
+[tool.pyright]
+reportMissingTypeStubs = false
+reportAny = false
+reportCallIssue = false
+
+reportUnknownVariableType = false
+reportUnknownParameterType = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

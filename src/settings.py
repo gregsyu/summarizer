@@ -1,10 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from typing import ClassVar
 import os
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
         env_file=(".env", ".env.local", ".env.development"),
         env_file_encoding="utf-8",
         case_sensitive=False,
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     MODEL: str = os.getenv("MODEL", "")
     BASE_URL: str = os.getenv("BASE_URL", "http://localhost:11434")
     API_KEY: str = os.getenv("API_KEY", "")
-    ALLOW_ORIGINS: List[str] = [
+    ALLOW_ORIGINS: list[str] = [
         s.strip()
         for s in os.getenv(
             "ALLOW_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000"

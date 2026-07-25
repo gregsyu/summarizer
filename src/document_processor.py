@@ -8,11 +8,12 @@ from langchain_community.document_loaders import (
     Docx2txtLoader,
     UnstructuredMarkdownLoader,
 )
+from langchain_core.document_loaders import BaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from typing import List, Dict, Callable
+from typing import Callable
 
-SUPPORTED_EXTENSIONS: Dict[str, Callable] = {
+SUPPORTED_EXTENSIONS: dict[str, Callable[..., BaseLoader]] = {
     ".pdf": PyPDFLoader,
     ".txt": partial(TextLoader, encoding="utf-8"),
     ".docx": Docx2txtLoader,
@@ -20,7 +21,13 @@ SUPPORTED_EXTENSIONS: Dict[str, Callable] = {
 }
 
 
-async def process_uploaded_file(file: UploadFile) -> List[Document]:
+async def process_uploaded_file(file: UploadFile) -> list[Document]:
+    if file.filename is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded file must have a filename",
+        )
+
     file_ext = os.path.splitext(file.filename.lower())[1]
 
     if file_ext not in SUPPORTED_EXTENSIONS.keys():
@@ -41,7 +48,7 @@ async def process_uploaded_file(file: UploadFile) -> List[Document]:
     with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as (
         tmp_file
     ):
-        tmp_file.write(content)
+        _ = tmp_file.write(content)
         tmp_path = tmp_file.name
         # close temporary file here
 
