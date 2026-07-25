@@ -45,9 +45,7 @@ async def process_uploaded_file(file: UploadFile) -> list[Document]:
     # recommended way to pass a file path to loaders
     # that will open the file themselves:
     # with/try/finally
-    with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as (
-        tmp_file
-    ):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as (tmp_file):
         _ = tmp_file.write(content)
         tmp_path = tmp_file.name
         # close temporary file here

@@ -45,13 +45,11 @@ def get_llm():
         case "openai":
             return ChatOpenAI(model=settings.MODEL, api_key=api_key)
         case "anthropic":
-            return ChatAnthropic(
-                model_name=settings.MODEL, api_key=api_key
-                )
+            return ChatAnthropic(model_name=settings.MODEL, api_key=api_key)
         case _:
             raise ValueError(
-                f"Unsupported LLM provider: {provider}. " +
-                "Supported providers: ollama, groq, openai, anthropic"
+                f"Unsupported LLM provider: {provider}. "
+                + "Supported providers: ollama, groq, openai, anthropic"
             )
 
 
@@ -75,9 +73,7 @@ async def summarize(request: SummarizeRequest):
             }
         )
 
-        return ContentResponse(
-            content=result.strip(), word_count=len(result.split())
-            )
+        return ContentResponse(content=result.strip(), word_count=len(result.split()))
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error generating summary: {str(e)}"
@@ -100,9 +96,7 @@ async def generate_content(request: GenerateRequest):
             }
         )
 
-        return ContentResponse(
-            content=result.strip(), word_count=len(result.split())
-            )
+        return ContentResponse(content=result.strip(), word_count=len(result.split()))
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error generating content: {str(e)}"
